@@ -9,15 +9,21 @@ export function initTerminal() {
 	term = new Terminal({});
 
 	loadConfig();
+	const lineHeight = term.getOption('lineHeight') * term.getOption('fontSize');
 
-	term.open(document.querySelector('#terminal .sizer'));
+	const $p = $('#terminal');
+
+	const rows = Math.floor($p.height() / lineHeight);
+	term.setOption('rows', rows);
+	console.log('rows=', rows);
+
+	term.open($p[0]);
+	fit(term);
+
 	term.write('Hello from \x1B[1;3;31mxterm.js\x1B[0m ');
 	term.write(new Array(100).fill('A').join('-'));
 
-	fit(term);
-
 	$(window).on('resize', () => {
-		console.log('fit');
 		fit(term);
 	});
 }

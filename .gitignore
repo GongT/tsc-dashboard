@@ -4,7 +4,7 @@ node_modules/
 *.css
 *.map
 *.js
-!electron-main.js
+!src/electron-main.ts
 
 ui/scripts/
 

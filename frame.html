@@ -2,22 +2,23 @@
 <html>
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<base href="..">
 	<link rel="stylesheet" href="node_modules/material-design-icons/iconfont/material-icons.css">
 	<link rel="stylesheet" href="node_modules/material-design-lite/material.min.css">
 	<link rel="stylesheet" href="node_modules/xterm/dist/xterm.css"/>
-	<link rel="stylesheet" href="ui/styles/frame.css"/>
+	<link rel="stylesheet" href="styles/frame.css"/>
 	<script type="text/javascript">
 	// require('electron-unhandled')();
 	</script>
 </head>
 <body>
-<!-- The drawer is always open in large screens. The header is always shown,
-  even in small screens. -->
 <div class="mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header">
 	<header class="mdl-layout__header">
 		<div class="mdl-layout__header-row">
 			<div class="mdl-layout-spacer"></div>
+			<button class="mdl-button mdl-js-button mdl-js-ripple-effect">
+				<i class="material-icons">delete_forever</i>
+			</button>
+			<span class="space">&nbsp;</span>
 			<button class="mdl-button mdl-js-button mdl-js-ripple-effect">
 				<i class="material-icons">delete_forever</i>
 			</button>
@@ -31,20 +32,16 @@
 		<span class="mdl-layout-title">Typescript Complier</span>
 		<nav class="mdl-navigation">
 			<a class="mdl-navigation__link" href="">Link</a>
-			<a class="mdl-navigation__link" href="">Link</a>
-			<a class="mdl-navigation__link" href="">Link</a>
-			<a class="mdl-navigation__link" href="">Link</a>
 		</nav>
 	</div>
 	<main class="mdl-layout__content">
-		<div id="terminal">
-			<div class="sizer"></div>
-		</div>
+		<div id="terminal"></div>
 	</main>
 </div>
 
 <script type="text/javascript">
 document.addEventListener('DOMContentLoaded', () => {
+	require('app-module-path').addPath(`${__dirname}/scripts`);
 	require('window/index');
 });
 </script>

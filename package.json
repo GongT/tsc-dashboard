@@ -1,12 +1,13 @@
 {
 	"version": "1.0.0",
-	"main": "electron-main.js",
+	"main": "scripts/electron-main.js",
 	"license": "MIT",
 	"scripts": {
 		"start": "electron . --disable-gpu",
 		"watch": "tsc -p src -w"
 	},
 	"dependencies": {
+		"app-module-path": "^2.2.0",
 		"devtron": "^1.4.0",
 		"electron": "^2.0.6",
 		"electron-debug": "^2.0.0",

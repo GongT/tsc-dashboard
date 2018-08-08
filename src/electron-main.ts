@@ -1,6 +1,6 @@
-const {app, BrowserWindow} = require('electron');
-const {resolve} = require('path');
-const {is} = require('electron-util');
+const { app, BrowserWindow } = require('electron');
+const { resolve } = require('path');
+const { is } = require('electron-util');
 
 console.log('hello world!');
 
@@ -17,7 +17,7 @@ require('electron-debug')({
 	devToolsMode: 'right',
 });
 
-const ROOT = resolve(__dirname);
+const ROOT = resolve(__dirname, '..');
 
 app.on('ready', () => {
 	const mainWindow = new BrowserWindow({
@@ -31,8 +31,8 @@ app.on('ready', () => {
 	});
 	console.log('main window created');
 	mainWindow.setMenu(null);
-	mainWindow.loadFile(resolve(ROOT, 'ui/frame.html'));
-	
+	mainWindow.loadFile(resolve(ROOT, 'frame.html'));
+
 	mainWindow.on('closed', () => {
 		process.exit();
 	});

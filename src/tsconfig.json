@@ -22,7 +22,7 @@
 		"noImplicitThis": true,
 		"noEmitOnError": true,
 		"baseUrl": ".",
-		"outDir": "../node_modules/",
+		"outDir": "../scripts/",
 		"alwaysStrict": true,
 		"typeRoots": [
 			"../node_modules/@types"

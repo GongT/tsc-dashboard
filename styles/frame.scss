@@ -1,9 +1,12 @@
-
 body {
 	display: flex;
+	flex-direction: column;
+	> * {
+		flex-grow: 1;
+	}
 }
 
-#terminal, .sizer {
+#terminal {
 	height: 100%;
 	width: 100%;
 	position: absolute;
