@@ -1,0 +1,16 @@
+
+body {
+	display: flex;
+}
+
+#terminal, .sizer {
+	height: 100%;
+	width: 100%;
+	position: absolute;
+	left: 0;
+	right: 0;
+}
+
+.mdl-layout__header-row .mdl-button > .material-icons {
+	color: white
+}

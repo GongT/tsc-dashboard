@@ -1,0 +1,16 @@
+yarn-error.log
+node_modules/
+
+*.css
+*.map
+*.js
+!electron-main.js
+
+ui/scripts/
+
+.idea/*
+!.idea/codeStyles/
+!.idea/encodings.xml
+!.idea/modules.xml
+!.idea/*.iml
+

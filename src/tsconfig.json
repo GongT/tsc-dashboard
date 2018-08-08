@@ -1,0 +1,35 @@
+{
+	"compileOnSave": false,
+	"compilerOptions": {
+		"lib": [
+			"es5",
+			"es6",
+			"es7",
+			"esnext",
+			"dom"
+		],
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"noImplicitAny": false,
+		"removeComments": false,
+		"preserveConstEnums": true,
+		"target": "esnext",
+		"declaration": false,
+		"sourceMap": true,
+		"experimentalDecorators": true,
+		"noImplicitReturns": true,
+		"noUnusedLocals": true,
+		"noImplicitThis": true,
+		"noEmitOnError": true,
+		"baseUrl": ".",
+		"outDir": "../node_modules/",
+		"alwaysStrict": true,
+		"typeRoots": [
+			"../node_modules/@types"
+		],
+		"types": [
+			"node",
+			"electron"
+		]
+	}
+}
