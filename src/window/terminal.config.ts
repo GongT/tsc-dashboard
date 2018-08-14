@@ -3,7 +3,7 @@ import { is } from 'electron-util';
 
 interface TerminalConfig {
 	fontFamily: string;
-	bellStyle: null | 'none' | 'visual' | 'sound' | 'both';
+	bellStyle: null | 'none' | 'sound';
 	cursorStyle: null | 'block' | 'underline' | 'bar'
 	cursorBlink: boolean;
 	enableBold: boolean;
@@ -16,7 +16,7 @@ interface TerminalConfig {
 
 const defaultConfig: TerminalConfig = {
 	fontFamily: is.windows? 'consolas' : 'wenquanyi micro hei mono',
-	bellStyle: 'both',
+	bellStyle: 'sound',
 	cursorStyle: 'bar',
 	cursorBlink: true,
 	enableBold: true,

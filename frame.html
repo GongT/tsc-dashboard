@@ -7,7 +7,20 @@
 	<link rel="stylesheet" href="node_modules/xterm/dist/xterm.css"/>
 	<link rel="stylesheet" href="styles/frame.css"/>
 	<script type="text/javascript">
-	// require('electron-unhandled')();
+	if (!require('electron-util').is.development) {
+		require('electron-unhandled')({
+			logger(e) {
+				console.error(e);
+				require('electron').ipcRenderer.send('window-event', 'error', {
+					name: e.name,
+					message: e.message,
+					stack: e.stack,
+					file: e.file,
+					line: e.line,
+				});
+			},
+		});
+	}
 	</script>
 </head>
 <body>
@@ -15,27 +28,45 @@
 	<header class="mdl-layout__header">
 		<div class="mdl-layout__header-row">
 			<div class="mdl-layout-spacer"></div>
-			<button class="mdl-button mdl-js-button mdl-js-ripple-effect">
+			<button id="btnSettings" class="mdl-button mdl-js-button square mdl-js-ripple-effect">
+				<i class="material-icons">settings_application</i>
+			</button>
+			<div class="mdl-tooltip mdl-tooltip--large" for="btnSettings">
+				show the settings
+			</div>
+			<span class="space">&nbsp;</span>
+			<button id="btnTrash" class="mdl-button mdl-js-button square mdl-js-ripple-effect">
 				<i class="material-icons">delete_forever</i>
 			</button>
+			<div class="mdl-tooltip mdl-tooltip--large" for="btnTrash">
+				kill current process
+			</div>
 			<span class="space">&nbsp;</span>
-			<button class="mdl-button mdl-js-button mdl-js-ripple-effect">
-				<i class="material-icons">delete_forever</i>
+			<button id="btnReload" class="mdl-button mdl-js-button square mdl-js-ripple-effect">
+				<i class="material-icons">repeat</i>
 			</button>
+			<div class="mdl-tooltip mdl-tooltip--large" for="btnReload">
+				restart current process
+			</div>
 			<span class="space">&nbsp;</span>
-			<button class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-js-ripple-effect mdl-button--colored">
+			<button id="btnAdd" class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-js-ripple-effect mdl-button--colored">
 				<i class="material-icons">add</i>
 			</button>
+			<div class="mdl-tooltip mdl-tooltip--large" for="btnAdd">
+				create new process
+			</div>
 		</div>
 	</header>
 	<div class="mdl-layout__drawer">
 		<span class="mdl-layout-title">Typescript Complier</span>
-		<nav class="mdl-navigation">
-			<a class="mdl-navigation__link" href="">Link</a>
+		<nav id="namesHolder" class="mdl-navigation">
 		</nav>
 	</div>
 	<main class="mdl-layout__content">
 		<div id="terminal"></div>
+		<div id="settings" style="display:none;">
+		
+		</div>
 	</main>
 </div>
 

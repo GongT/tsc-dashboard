@@ -14,6 +14,29 @@ body {
 	right: 0;
 }
 
-.mdl-layout__header-row .mdl-button > .material-icons {
-	color: white
+.mdl-layout__header-row {
+	.mdl-button > .material-icons {
+		color: white
+	}
+	.square {
+		width: 8em;
+		text-align: center;
+	}
+	.space {
+		width: 2em;
+	}
+}
+
+.material-icons {
+	width: 1em;
+}
+
+#namesHolder {
+	overflow: hidden;
+	> .processLink {
+		white-space: nowrap;
+		&.terminated {
+			color: red;
+		}
+	}
 }
