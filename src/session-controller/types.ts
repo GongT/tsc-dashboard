@@ -1,11 +1,15 @@
+import { Readable } from 'stream';
+
 export interface IProcessState {
 	readonly name: string;
 
-	activate(): void;
+	readonly stdout: Readable;
 
-	waitExit(): Promise<Readonly<IProcessExitSuccess | IProcessExitFailed>>;
+	activate(): PromiseLike<void>;
 
-	waitCollect(): Promise<void>;
+	waitExit(): PromiseLike<Readonly<IProcessExitSuccess | IProcessExitFailed>>;
+
+	waitCollect(): PromiseLike<void>;
 }
 
 export interface IProcessExitSuccess {

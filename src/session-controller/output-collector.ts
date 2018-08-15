@@ -5,15 +5,45 @@ const eraseAll = Buffer.from([0x1B, 0x63]); // \ec
 
 export class OutputCollector extends Transform {
 	protected backLines: string[] = [];
+	protected finished: boolean;
 
-	constructor(protected parent: StreamMultiplexer, protected readonly upstreamInput: NodeJS.WritableStream) {
+	constructor(protected parent: StreamMultiplexer) {
 		super();
+		this.resume();
 	}
 
-	pipeFrom(source: NodeJS.ReadableStream) {
-		source.pipe(this.upstreamInput);
+	end(cb?: () => void): void;
+	end(chunk: any, cb?: () => void): void;
+	end(chunk: any, encoding?: string, cb?: () => void): void;
+	end(cb, ...args) {
+		if (arguments.length === 0) {
+			return;
+		} else if (typeof cb === 'function') {
+			cb();
+		} else {
+			this.write(cb, ...args);
+		}
 	}
 
+	realEnd(...args) {
+		const ret = super.end(...args);
+		this.finished = true;
+		return ret;
+	}
+
+	emit(e: string, ...args: any[]) {
+		const ret = super.emit(e, ...args);
+		if (e === 'end') {
+			this.finished = true;
+		}
+		return ret;
+	}
+
+	hasFinished() {
+		return this.finished;
+	}
+
+	/** emitting buffer, becouse transform stream do not have object mode option */
 	_transform(chunk: Buffer, encoding: string, callback: TransformCallback): void {
 		if (!encoding || encoding === 'buffer') {
 			encoding = 'utf8';
@@ -37,10 +67,10 @@ export class OutputCollector extends Transform {
 	}
 
 	get scrollBack() {
-		return this.backLines.join('\n'); // backLines always starts with \ec
+		return this.backLines.join('\r\n') + '\r\n'; // backLines always starts with \ec
 	}
 
 	activate() {
-		this.parent.switchTo(this);
+		return this.parent.pipeFrom(this);
 	}
 }

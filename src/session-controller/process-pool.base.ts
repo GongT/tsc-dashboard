@@ -1,7 +1,8 @@
-import { spawn, SpawnOptions } from 'child_process';
+import { SpawnOptions } from 'child_process';
 import { StreamMultiplexer } from 'session-controller/output-multiplexer';
-import { IProcessData, IProcessHandler, IProcessPoolHandler, IProcessPoolStarter } from 'session-controller/types';
+import { IProcessHandler, IProcessPoolHandler, IProcessPoolStarter } from 'session-controller/types';
 import { ProcessState } from 'session-controller/process-state';
+import { remote } from 'electron';
 
 export abstract class ProcessPool implements IProcessPoolHandler, IProcessPoolStarter {
 	public readonly output: StreamMultiplexer;
@@ -11,33 +12,42 @@ export abstract class ProcessPool implements IProcessPoolHandler, IProcessPoolSt
 
 	constructor() {
 		this.output = new StreamMultiplexer();
+		this.output.resume();
+	}
+
+	getCurrentProcess() {
+		return ProcessState.Current;
 	}
 
 	handler(callback: IProcessHandler): void {
-		if (this.handler) {
+		if (this.callback) {
 			throw new Error('Can not have multiple callback');
 		}
 		this.callback = callback;
 	}
 
-	protected spawn(readName: string, command: string, args?: ReadonlyArray<string>, options?: SpawnOptions): void {
-		const process = spawn(command, args, {
-			...options,
-			stdio: ['ignore', 'pipe', 'pipe'],
-		});
+	protected spawnWorker(readName: string, commandToRun: ReadonlyArray<string>): void {
+		const options: SpawnOptions = {
+			env        : { ...remote.process.env, __TSDASHBOARD_CHILD: 'yes' },
+			windowsHide: true,
+			cwd        : remote.process.cwd(),
+			stdio      : ['ignore', 'pipe', 'pipe', 'pipe', 'ipc'],
+		};
+		console.log('running:', remote.process.argv);
 
-		const state = new ProcessState(readName, process, this.output.create());
+		const output = this.output.create();
+		const state = new ProcessState(readName, options, commandToRun, output);
 
-		console.log('spawned process [%s %s] as id %s', command, args.join(' '), process.pid);
+		console.log('spawned process [%s] as id %s', commandToRun.join(' '), state.process.pid);
 
 		state.attachHandlers();
 
 		this.callback(state).then(() => {
 
-		}, () => {
-
+		}, (e) => {
+			setImmediate(() => {
+				throw e;
+			});
 		});
 	}
-
-	protected activate()
 }

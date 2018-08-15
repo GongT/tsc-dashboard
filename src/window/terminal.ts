@@ -3,9 +3,9 @@ import { fit } from 'xterm/lib/addons/fit/fit';
 import { terminalConfig } from 'window/terminal.config';
 import * as $ from 'jquery';
 import { remote } from 'electron';
-import { IProcessPoolHandler } from 'session-controller/types';
+import { processes } from 'global';
 
-export function initTerminal(pPool: IProcessPoolHandler) {
+export function initTerminal() {
 	const gpuState = '' + remote.app.getGPUFeatureStatus()['2d_canvas'];
 	let render: RendererType;
 	if (/enabled/.test(gpuState)) {
@@ -31,8 +31,7 @@ export function initTerminal(pPool: IProcessPoolHandler) {
 
 	$(window).on('resize', fit.bind(undefined, term));
 
-	pPool.output.on('data', (data) => {
-		debugger;
-		term.write(data);
+	processes.output.on('data', (data) => {
+		term.writeln(data.toString());
 	});
 }

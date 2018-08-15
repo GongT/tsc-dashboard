@@ -34,9 +34,27 @@ body {
 #namesHolder {
 	overflow: hidden;
 	> .processLink {
+		position: relative;
+		
 		white-space: nowrap;
+		padding: 15px 10px 15px 28+15px;
+		
+		> .mdl-spinner, > .icon {
+			position: absolute;
+			left: 10px;
+			top: 15px;
+		}
+		> * {
+			vertical-align: middle;
+		}
+		&.error {
+			color: red;
+		}
 		&.terminated {
 			color: red;
+		}
+		&.activate {
+			font-weight: bold;
 		}
 	}
 }

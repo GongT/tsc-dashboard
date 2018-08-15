@@ -1,4 +1,5 @@
 import * as $ from 'jquery';
+import { processes } from 'global';
 
 export function initSettingsPage() {
 	const $btnOther = $('#btnTrash,#btnAdd,#btnReload');
@@ -13,6 +14,8 @@ export function initSettingsPage() {
 	$btnSwitch.on('click', () => {
 		showState = !showState;
 		if (showState) {
+			processes.output.pipeFrom(null);
+			processes.output.flush();
 			$btnSwitch.addClass(toggleClass);
 			$btnOther.attr('disabled', 'disabled');
 			$tabTerminal.hide();
