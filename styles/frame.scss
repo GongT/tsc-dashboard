@@ -32,6 +32,7 @@ body {
 }
 
 #namesHolder {
+	position: relative;
 	overflow: hidden;
 	> .processLink {
 		position: relative;
@@ -56,5 +57,21 @@ body {
 		&.activate {
 			font-weight: bold;
 		}
+	}
+}
+
+.mdl-layout__drawer {
+	> .mask {
+		display: none;
+	}
+	&.disabled > .mask {
+		display: block;
+		position: absolute;
+		left: 0;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		z-index: 1000000;
+		background: rgba(0, 0, 0, 0.12);
 	}
 }

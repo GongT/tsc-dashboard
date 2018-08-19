@@ -4,21 +4,6 @@ process.on('disconnect', () => {
 	process.exit(1);
 });
 
-process.on('message', (data) => {
-	if (!Array.isArray(data)) {
-		return;
-	}
-	const [action, argument] = data;
-
-	switch (action) {
-		case 'run':
-			console.log('\x1B[1;38;5;14m%s\x1B[0m', argument.join(' '));
-			dispose();
-			const job = argument.shift();
-			handleJob(job, argument);
-	}
-});
-
 function handleJob(job: string, argument: string[]) {
 	switch (job) {
 		case 'tsc':
@@ -51,3 +36,17 @@ let dispose = (() => {
 	};
 })();
 
+process.on('message', (data) => {
+	if (!Array.isArray(data)) {
+		return;
+	}
+	const [action, argument] = data;
+
+	switch (action) {
+		case 'run':
+			console.log('\x1B[1;38;5;14m%s\x1B[0m', argument.join(' '));
+			dispose();
+			const job = argument.shift();
+			handleJob(job, argument);
+	}
+});

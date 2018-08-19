@@ -1,21 +1,4 @@
-const typescriptCompilerLocales = {
-	'en'   : 'English (US)',
-	'cs'   : 'Czech',
-	'de'   : 'German',
-	'es'   : 'Spanish',
-	'fr'   : 'French',
-	'it'   : 'Italian',
-	'ja'   : 'Japanese',
-	'ko'   : 'Korean',
-	'pl'   : 'Polish',
-	'pt-BR': 'Portuguese(Brazil)',
-	'ru'   : 'Russian',
-	'tr'   : 'Turkish',
-	'zh-CN': 'Simplified Chinese',
-	'zh-TW': 'Traditional Chinese',
-};
-
-type Locales = keyof typeof typescriptCompilerLocales;
+import { Locales } from 'actions/typescriptConfigureConfig';
 
 export enum SIGNAL_MESSAGE_ID {
 	ERROR_SINGLE = 1,

@@ -45,6 +45,7 @@ export const loader = new WindowCreator(async () => {
 });
 
 if (app.makeSingleInstance(onNewInstance)) {
+	console.log('running instance exists.');
 	process.exit(0);
 }
 

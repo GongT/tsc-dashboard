@@ -59,6 +59,7 @@
 	</header>
 	<div class="mdl-layout__drawer">
 		<span class="mdl-layout-title">Typescript Complier</span>
+		<div class="mask"></div>
 		<nav id="namesHolder" class="mdl-navigation">
 		</nav>
 	</div>
@@ -68,14 +69,31 @@
 			<form action="#" id="settingsForm">
 				<div>
 					<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-						<select class="mdl-textfield__input" type="text" id="language"></select>
-						<label class="mdl-textfield__label" for="language">Language</label>
+						<select class="mdl-textfield__input" type="text" id="locale">
+							<option value="">Use tsconfig.json</option>
+						</select>
+						<label class="mdl-textfield__label" for="locale">Compiler Language</label>
 					</div>
 				</div>
 			</form>
 		</div>
 	</main>
 </div>
+
+<dialog id="instanceConfig" class="mdl-dialog">
+	<h4 class="mdl-dialog__title">Instance Configuration</h4>
+	<form class="mdl-dialog__content">
+		<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+			<select class="mdl-textfield__input" type="text" id="localeOverwrite"></select>
+			<label class="mdl-textfield__label" for="language">Language</label>
+		</div>
+	
+	</form>
+	<div class="mdl-dialog__actions">
+		<button type="button" class="mdl-button save">Save</button>
+		<button type="button" class="mdl-button close">Cancel</button>
+	</div>
+</dialog>
 
 <script type="text/javascript">
 document.addEventListener('DOMContentLoaded', () => {

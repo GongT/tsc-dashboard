@@ -1,7 +1,13 @@
 import { Readable } from 'stream';
+import { ProcessStatus } from 'session-controller/process-state';
+
+export interface OnStateChange {
+	(newState: ProcessStatus, process: this): void;
+}
 
 export interface IProcessState {
 	readonly name: string;
+	readonly detail: string;
 
 	readonly stdout: Readable;
 
@@ -10,6 +16,12 @@ export interface IProcessState {
 	waitExit(): PromiseLike<Readonly<IProcessExitSuccess | IProcessExitFailed>>;
 
 	waitCollect(): PromiseLike<void>;
+
+	onStateChange(cb: OnStateChange): void;
+
+	exitOrCollect(): void;
+
+	reset(): void;
 }
 
 export interface IProcessExitSuccess {

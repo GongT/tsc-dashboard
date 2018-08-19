@@ -1,6 +1,7 @@
 import * as $ from 'jquery';
-import { SIGNAL_MESSAGE_ID } from 'actions/typescriptLocale';
 import { processes } from 'global';
+import { IProcessState } from 'session-controller/types';
+import { ProcessStatus } from 'session-controller/process-state';
 
 enum Status {
 	IDLE = 'check_circle_outline',
@@ -45,12 +46,11 @@ function spinner($parent: JQuery, $icon: JQuery) {
 
 export function initFrame() {
 	const $linkContainer = $('#namesHolder');
-	const nameTitleTemplate = '<a class="processLink mdl-navigation__link" href="###"></a>';
 
 	$('#btnTrash').on('click', () => {
 		const current = processes.getCurrentProcess();
 		if (current) {
-			current.collect();
+			current.exitOrCollect();
 		}
 	});
 	$('#btnReload').on('click', () => {
@@ -60,9 +60,69 @@ export function initFrame() {
 		}
 	});
 
-	processes.handler(async (process) => {
-		const $link = $(nameTitleTemplate).append($('<span>').text(process.name)).appendTo($linkContainer);
-		const $icon = $('<div class="icon material-icons">').prependTo($link);
+	const dialog = document.querySelector('#instanceConfig') as HTMLDialogElement;
+	dialog.querySelector('.save').addEventListener('click', () => {
+
+	});
+	dialog.querySelector('.close').addEventListener('click', () => {
+		dialog.close();
+	});
+
+	let currentLink: string;
+	$linkContainer.on('mousedown', '.processLink', function (event) {
+		switch (event.which) {
+			case 1:
+				return;
+			case 2:
+				event.preventDefault();
+				return;
+			case 3:
+				event.preventDefault();
+				dialog.showModal();
+				return;
+		}
+	});
+	$linkContainer.on('click', '.processLink', async function (event) {
+		const $link = $(this);
+		if (currentLink === $link.attr('id')) {
+			return;
+		}
+		currentLink = $link.attr('id');
+
+		$link.addClass('mdl-navigation__link--current');
+
+		await ($link.data('process') as Readonly<IProcessState>).activate();
+
+		$link.removeClass('mdl-navigation__link--current');
+	});
+
+	const nameTitleTemplate = '<a class="processLink mdl-navigation__link" href="###"></a>';
+	processes.handler(async (process: Readonly<IProcessState>) => {
+		const id = 'link_' + Math.random();
+		const $link = $(nameTitleTemplate)
+			.data('process', process)
+			.attr({
+				title: process.name,
+				id,
+			})
+			.appendTo($linkContainer);
+
+		const $linkTip = $('<div>')
+			.attr({
+				class: 'mdl-tooltip mdl-tooltip--large mdl-tooltip--right',
+				for  : id,
+			})
+			.text(process.detail)
+			.appendTo($linkContainer);
+		componentHandler.upgradeElement($linkTip[0]);
+
+		const $icon = $('<div class="icon material-icons">')
+			.appendTo($link);
+
+		$('<span>')
+			.text(process.name)
+			.appendTo($link);
+
 		const spin = spinner($link, $icon);
 
 		componentHandler.upgradeElement($icon[0]);
@@ -70,19 +130,11 @@ export function initFrame() {
 		spin.spin();
 		$icon.text(Status.RUNNING);
 
-		process.stdout.on('data', handler);
-
-		$link.on('click', async () => {
-			$link.addClass('mdl-navigation__link--current');
-
-			await process.activate();
-
-			$link.removeClass('mdl-navigation__link--current');
-		}).trigger('click');
+		process.onStateChange(handler);
+		$link.trigger('click');
 
 		const result = await process.waitExit();
-
-		process.stdout.removeListener('data', handler);
+		console.log('[ui] process exited.');
 
 		$icon.text(Status.EXITED);
 		spin.kill();
@@ -95,30 +147,23 @@ export function initFrame() {
 		$link.addClass('terminated');
 
 		await process.waitCollect();
+		console.log('[ui] process collected.');
+		$link.remove();
 
-		$link.off().remove();
-
-		function handler(line) {
-			const messageType = processes.tscfg.testLine(line);
-			if (!messageType) {
-				return;
-			}
-			console.log('%s|%s|', SIGNAL_MESSAGE_ID[messageType], line);
-
-			switch (messageType) {
-				case SIGNAL_MESSAGE_ID.FILE_CHANGE:
+		function handler(status: ProcessStatus) {
+			switch (status) {
+				case ProcessStatus.IDLE:
+					$link.removeClass('error');
+					$icon.text(Status.IDLE);
+					spin.stop();
+					break;
+				case ProcessStatus.BUSY:
 					$link.removeClass('error');
 					spin.spin();
 					break;
-				case SIGNAL_MESSAGE_ID.ERROR_SINGLE:
-				case SIGNAL_MESSAGE_ID.ERROR_MULTIPLE:
+				case ProcessStatus.ERROR:
 					$link.addClass('error');
 					$icon.text(Status.HAS_ERROR);
-					spin.stop();
-					break;
-				case SIGNAL_MESSAGE_ID.SUCCESS:
-					$link.removeClass('error');
-					$icon.text(Status.IDLE);
 					spin.stop();
 					break;
 			}

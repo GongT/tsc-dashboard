@@ -8,12 +8,9 @@ export function askNewSession() {
 }
 
 export function handleInitNewSession() {
-	ipcRenderer.on(CHANNEL_CREATE_TSCONFIG_SESSION, (event, file) => () => {
+	ipcRenderer.on(CHANNEL_CREATE_TSCONFIG_SESSION, (event, file) => {
 		console.log('receive start request:', file);
 		processes.start(file);
 	});
-	// $('#btnAdd').on('click', askNewSession);
-	$('#btnAdd').on('click', () => {
-		processes.start('/data/DevelopmentRoot/projects/tsc-dashboard/test/tsconfig.json');
-	});
+	$('#btnAdd').on('click', askNewSession);
 }

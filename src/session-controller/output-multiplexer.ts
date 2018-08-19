@@ -34,6 +34,9 @@ export class StreamMultiplexer extends Transform implements IOutputMultiplexer {
 	pipeFrom(target: null): void;
 	pipeFrom(target: OutputCollector): PromiseLike<void>;
 	pipeFrom(target: OutputCollector | null) {
+		if (this.current === target) {
+			return this.lastDeferred? this.lastDeferred.promise() : void 0;
+		}
 		if (this.current) {
 			this.lastDeferred.resolve();
 			this.current.unpipe(this);

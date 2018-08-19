@@ -1,7 +1,7 @@
 import { SpawnOptions } from 'child_process';
 import { StreamMultiplexer } from 'session-controller/output-multiplexer';
-import { IProcessHandler, IProcessPoolHandler, IProcessPoolStarter } from 'session-controller/types';
-import { ProcessState } from 'session-controller/process-state';
+import { IProcessHandler, IProcessPoolHandler, IProcessPoolStarter, IProcessState } from 'session-controller/types';
+import { CustomDisplayOptions, ProcessEvent, ProcessState } from 'session-controller/process-state';
 import { remote } from 'electron';
 
 export abstract class ProcessPool implements IProcessPoolHandler, IProcessPoolStarter {
@@ -13,10 +13,17 @@ export abstract class ProcessPool implements IProcessPoolHandler, IProcessPoolSt
 	constructor() {
 		this.output = new StreamMultiplexer();
 		this.output.resume();
+		this.handleEvent = this.handleEvent.bind(this);
 	}
 
-	getCurrentProcess() {
-		return ProcessState.Current;
+	private handleEvent(event: ProcessEvent, ...args: any[]): void {
+		switch (event) {
+			case ProcessEvent.RESTART:
+				(this.spawnWorker as any)(...args);
+				break;
+			default:
+				this._handleEvent(event, ...args);
+		}
 	}
 
 	handler(callback: IProcessHandler): void {
@@ -26,7 +33,7 @@ export abstract class ProcessPool implements IProcessPoolHandler, IProcessPoolSt
 		this.callback = callback;
 	}
 
-	protected spawnWorker(readName: string, commandToRun: ReadonlyArray<string>): void {
+	protected spawnWorker(display: CustomDisplayOptions, commandToRun: ReadonlyArray<string>) {
 		const options: SpawnOptions = {
 			env        : { ...remote.process.env, __TSDASHBOARD_CHILD: 'yes' },
 			windowsHide: true,
@@ -36,18 +43,29 @@ export abstract class ProcessPool implements IProcessPoolHandler, IProcessPoolSt
 		console.log('running:', remote.process.argv);
 
 		const output = this.output.create();
-		const state = new ProcessState(readName, options, commandToRun, output);
-
-		console.log('spawned process [%s] as id %s', commandToRun.join(' '), state.process.pid);
-
+		const state = new ProcessState(display, options, commandToRun, output, this.handleEvent);
 		state.attachHandlers();
 
-		this.callback(state).then(() => {
-
-		}, (e) => {
-			setImmediate(() => {
-				throw e;
+		setImmediate(() => {
+			this.callback(state).then(() => {
+				if (state === this.getCurrentProcess()) {
+					this.output.pipeFrom(null);
+				}
+			}, (e) => {
+				setImmediate(() => {
+					throw e;
+				});
 			});
 		});
+
+		return state;
+	}
+
+	protected _handleEvent(event: ProcessEvent, ...args: any[]) {
+		// for overwrite
+	}
+
+	getCurrentProcess(): IProcessState {
+		return ProcessState.Current;
 	}
 }
